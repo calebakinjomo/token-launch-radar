@@ -3,12 +3,73 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Token Radar: pre-token protocols ranked by implied value</title>
+<title>Token Launch Radar — pre-token protocols, ranked by implied value</title>
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
-<a class="skip" href="#board">Skip to the board</a>
-<main id="board" tabindex="-1" aria-busy="true"></main>
+<header class="top">
+  <div>
+    <h1>Token Launch Radar</h1>
+    <p class="sub">226 pre-token protocols, ranked by what their token would be worth if it launched tomorrow and nothing else changed.</p>
+  </div>
+  <div class="meta">
+    <span id="asof">Snapshot —</span>
+    <span id="counts">—</span>
+  </div>
+</header>
+
+<section class="model" id="model-note">
+  <h2>How the number is made</h2>
+  <p><strong>Implied value = TVL × category multiple × growth × maturity.</strong>
+  The multiple is the median market-cap-per-$1-TVL of live-token protocols in the
+  same category (at least two of them, each holding $10M+ of TVL); a category with
+  fewer falls back to the global median. Growth is the seven-day TVL change at half
+  weight. Maturity is how long the protocol has run with no token. Every figure
+  comes from the sealed snapshot — no name on this board is hardcoded, and the
+  value is this radar's own claim, never a prediction that a token will launch.</p>
+</section>
+
+<section class="controls">
+  <label>Search <input id="q" type="search" placeholder="protocol, category or chain…" autocomplete="off"></label>
+  <label>Category
+    <select id="cat"><option value="">All categories</option></select>
+  </label>
+  <label class="check"><input id="watchonly" type="checkbox"> Watchlist only</label>
+  <span id="shown" class="shown"></span>
+</section>
+
+<main>
+  <noscript><p class="noscript">This board is rendered by JavaScript from the snapshot data; enable JavaScript to see the ranked rows.</p></noscript>
+  <table id="board">
+    <thead>
+      <tr>
+        <th data-sort="rank" class="num sorted-desc">#</th>
+        <th data-sort="name">Protocol</th>
+        <th data-sort="category">Category</th>
+        <th data-sort="tvl_usd" class="num">TVL</th>
+        <th data-sort="change_7d" class="num">7d</th>
+        <th data-sort="age_years" class="num">Age</th>
+        <th data-sort="implied_value_usd" class="num">Implied value</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</main>
+
+<section class="live">
+  <h2>Already launched — not ranked</h2>
+  <p>These protocols already have a token trading, so there is nothing left to launch. They are set aside here, not scored, so the board above stays a board of launches still to come.</p>
+  <ul id="live-list"></ul>
+</section>
+
+<aside id="drawer" class="drawer" hidden>
+  <button id="drawer-close" type="button" aria-label="Close detail">×</button>
+  <div id="drawer-body"></div>
+</aside>
+
+<footer>
+  <p>Values are in whole US dollars from the sealed DefiLlama snapshot. A protocol on this board records no token — that is what its record says, not proof it has none. Farm plans are a reader's starting point, not financial advice.</p>
+</footer>
 <script src="../data.js"></script>
 <script src="app.js"></script>
 </body>

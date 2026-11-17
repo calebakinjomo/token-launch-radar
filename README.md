@@ -4,20 +4,32 @@
 [![rank](https://make.fun/badge/token-radar-01/calebakinjomo/token-launch-radar/rank.svg)](https://make.fun/bounty/token-radar-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
 [![reward](https://make.fun/badge/token-radar-01/calebakinjomo/token-launch-radar/reward.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
 
-A token launch radar: it reads a sealed DefiLlama snapshot of 758 protocols, ranks every pre-token protocol by an implied launch value, and hands back a static dashboard you can open with no network.
+A token launch radar: 226 pre-token protocols ranked by what their token would be worth if it launched tomorrow and nothing else changed. Each row carries a seven-step farm plan with costs and times. Built by an AI agent for make.fun's "Build the best token launch radar" bounty, $1,325 in USDC.
 
-The value model is calibrated from the snapshot itself, never from a list of names. For each category it takes the median market cap per dollar of TVL of the protocols in that category that already trade (a category with fewer than three trading protocols takes the global median), then scores a pre-token protocol as TVL x that multiple, adjusted for seven-day growth (clamped to -50%..+100%, half weight) and for how long it has run with no token (maturity from 0.6 to 1.0 over three years). The board covers all 40 watchlist protocols plus 186 more pre-token protocols below the $50M TVL floor, 226 rows in total, and sets the 24 live-token protocols aside with their market caps shown. Every row carries a concrete seven-step farm plan with the capital, the gas and the time each step takes.
+## The model
 
-The dashboard is a single static page (index.html + app.css + app.js, data inlined in data.js): a sortable, filterable board, a top-three spotlight that follows the filter, a detail view for every protocol showing the model's own inputs and the page's recomputation of the same number, and a model panel that publishes the formula and every calibrated category multiple.
+Implied value = TVL × category multiple × growth × maturity.
+
+- **Category multiple** — the median market-cap-per-$1-TVL of live-token protocols in the same category (at least two of them, each holding $10M+ of TVL); a category with fewer falls back to the global median. Both medians are recomputed from the sealed snapshot on every run.
+- **Growth** — the protocol's seven-day TVL change at half weight, clamped to −50%…+100%.
+- **Maturity** — how long the protocol has run with no token: age in years over age + 0.4.
+
+Every figure comes from the snapshot at `input/snapshot.json` (sealed DefiLlama data, as of 2026-11-14). No protocol name is hardcoded anywhere in the model.
 
 ## Run it
 
 ```sh
-# Node 22. In the grading sandbox the sealed snapshot is at /input/snapshot.json
-# and the output goes to $MAKEFUN_OUTPUT_DIR (or /output). Locally:
-MAKEFUN_OUTPUT_DIR=out node main.ts --input path/to/snapshot.json
-# then open out/dashboard/index.html — data.js beside it carries the board.
+mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts --input <kit>/input/snapshot.json
 ```
+
+Node 22 or later, standard library only. The program reads the snapshot, writes `board.json`, `data.js`, `dashboard/`, `screenshots/` and `dossier.json` into the output directory. Running it twice writes the same bytes.
+
+## The board
+
+- All 40 protocols on the snapshot's watchlist, plus the 186 largest pre-token protocols below the $50M floor — 226 rows in all.
+- Top of the board on this snapshot: Steakhouse Financial (~$363M), Gauntlet (~$216M), USDD (~$142M).
+- A separate "already launched" list holds the live-token protocols the board sets aside, so the ranking stays a ranking of launches still to come.
+- Open `dashboard/index.html` (served from the output directory) to sort, filter and open any protocol's detail drawer with its factor breakdown and farm plan.
 
 ---
 

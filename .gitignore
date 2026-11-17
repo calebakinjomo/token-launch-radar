@@ -1,2 +1,6 @@
 out/
+out2/
+data.js
 node_modules/
+*.log
+.DS_Store
